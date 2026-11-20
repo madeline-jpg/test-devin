@@ -9,15 +9,73 @@
       margin: 0;
       min-height: 100vh;
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
       font-family: system-ui, sans-serif;
       background: #a5d6a7;
       color: #222;
     }
+    #timer {
+      font-size: 3rem;
+      font-variant-numeric: tabular-nums;
+      margin: 0.5rem 0 1rem;
+    }
+    button {
+      font-size: 1rem;
+      padding: 0.5rem 1rem;
+      margin: 0 0.25rem;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
   <h1>Hello!</h1>
+  <div id="timer">00:00</div>
+  <div>
+    <button id="start">Start</button>
+    <button id="pause">Pause</button>
+    <button id="reset">Reset</button>
+  </div>
+  <script>
+    let elapsed = 0;
+    let startedAt = null;
+    let interval = null;
+    const display = document.getElementById('timer');
+
+    function currentMs() {
+      return elapsed + (startedAt === null ? 0 : performance.now() - startedAt);
+    }
+
+    function render() {
+      const seconds = Math.floor(currentMs() / 1000);
+      const m = String(Math.floor(seconds / 60)).padStart(2, '0');
+      const s = String(seconds % 60).padStart(2, '0');
+      display.textContent = `${m}:${s}`;
+    }
+
+    function stop() {
+      elapsed = currentMs();
+      startedAt = null;
+      clearInterval(interval);
+      interval = null;
+    }
+
+    document.getElementById('start').onclick = () => {
+      if (interval) return;
+      startedAt = performance.now();
+      interval = setInterval(render, 250);
+    };
+    document.getElementById('pause').onclick = () => {
+      stop();
+      render();
+    };
+    document.getElementById('reset').onclick = () => {
+      stop();
+      elapsed = 0;
+      render();
+    };
+    document.addEventListener('visibilitychange', render);
+  </script>
 </body>
 </html>
