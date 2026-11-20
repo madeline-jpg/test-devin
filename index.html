@@ -38,30 +38,44 @@
     <button id="reset">Reset</button>
   </div>
   <script>
-    let seconds = 0;
+    let elapsed = 0;
+    let startedAt = null;
     let interval = null;
     const display = document.getElementById('timer');
 
+    function currentMs() {
+      return elapsed + (startedAt === null ? 0 : Date.now() - startedAt);
+    }
+
     function render() {
+      const seconds = Math.floor(currentMs() / 1000);
       const m = String(Math.floor(seconds / 60)).padStart(2, '0');
       const s = String(seconds % 60).padStart(2, '0');
       display.textContent = `${m}:${s}`;
     }
 
+    function stop() {
+      elapsed = currentMs();
+      startedAt = null;
+      clearInterval(interval);
+      interval = null;
+    }
+
     document.getElementById('start').onclick = () => {
       if (interval) return;
-      interval = setInterval(() => { seconds++; render(); }, 1000);
+      startedAt = Date.now();
+      interval = setInterval(render, 250);
     };
     document.getElementById('pause').onclick = () => {
-      clearInterval(interval);
-      interval = null;
-    };
-    document.getElementById('reset').onclick = () => {
-      clearInterval(interval);
-      interval = null;
-      seconds = 0;
+      stop();
       render();
     };
+    document.getElementById('reset').onclick = () => {
+      stop();
+      elapsed = 0;
+      render();
+    };
+    document.addEventListener('visibilitychange', render);
   </script>
 </body>
 </html>
