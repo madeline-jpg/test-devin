@@ -44,7 +44,7 @@
     const display = document.getElementById('timer');
 
     function currentMs() {
-      return elapsed + (startedAt === null ? 0 : Date.now() - startedAt);
+      return elapsed + (startedAt === null ? 0 : performance.now() - startedAt);
     }
 
     function render() {
@@ -63,7 +63,7 @@
 
     document.getElementById('start').onclick = () => {
       if (interval) return;
-      startedAt = Date.now();
+      startedAt = performance.now();
       interval = setInterval(render, 250);
     };
     document.getElementById('pause').onclick = () => {
